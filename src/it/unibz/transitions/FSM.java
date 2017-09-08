@@ -22,6 +22,14 @@ public class FSM {
 	String[] traces = null;
 	TraceGenerator generator = null;
 
+
+	public static String experiment;
+	public static String paths;
+	public static String extrapaths;
+	public static String result;
+	public static int perturbation;
+
+
 	String[] extraPaths = null;
 
 	public String[] getExtraPaths() {
@@ -71,12 +79,16 @@ public class FSM {
 	public FSM() throws NumberFormatException, IOException {
 		fsm = new Hashtable<>();
 
+		//generator = new TraceGenerator(
+		//		new File("/Users/nelioini/unibz/workspaces/inellij/FSM/data/paths.txt"));
 		generator = new TraceGenerator(
-				new File("/Users/nelioini/unibz/workspaces/inellij/FSM/data/paths.txt"));
+				new File(FSM.paths));
 		traces = generator.generateRandomTraces();
 
+		//BufferedReader br = new BufferedReader(new FileReader(new File(
+		//		"/Users/nelioini/unibz/workspaces/inellij/FSM/data/extrapaths.txt")));
 		BufferedReader br = new BufferedReader(new FileReader(new File(
-				"/Users/nelioini/unibz/workspaces/inellij/FSM/data/extrapaths.txt")));
+				FSM.extrapaths)));
 		extraPaths = new String[10];
 		String sCurrentLine;
 		int index = 0;
@@ -314,9 +326,29 @@ public class FSM {
 
 	public static void main(String[] args) throws IOException {
 
+		if (args.length > 3) {
+			try {
+				FSM.experiment = args[0];
+				FSM.paths = args[1];
+				FSM.extrapaths = args[2];
+				FSM.perturbation = Integer.parseInt(args[3]);
+				FSM.result = args[4];
+			} catch (Exception ex) {
+				System.out.println("Missing Arguments");
+				System.out.println("java FSM experiment.txt paths.txt extrapaths.txt result.txt");
+				System.exit(1);
+			}
+		}else{
+			System.out.println("Missing Arguments");
+			System.out.println("java FSM experiment.txt paths.txt extrapaths.txt result.txt");
+			System.exit(1);
+		}
+
+
 		Writer writer = new BufferedWriter(
+				//new OutputStreamWriter(new FileOutputStream( "/Users/nelioini/tmp/result.txt"), "utf-8"));
 				new OutputStreamWriter(new FileOutputStream(
-						"/Users/nelioini/tmp/result.txt"), "utf-8"));
+				FSM.result), "utf-8"));
 		writer.write("perturbed,refined\n");
 		// writer.println("The second line");
 		// writer.close();
@@ -325,7 +357,8 @@ public class FSM {
 
 			// load the initial model into the FSM
 			FSM fsm = new FSM();
-			fsm.generate(new File("/Users/nelioini/unibz/workspaces/inellij/FSM/data/experiment.txt"));
+			//fsm.generate(new File("/Users/nelioini/unibz/workspaces/inellij/FSM/data/experiment.txt"));
+			fsm.generate(new File(FSM.experiment));
 
 			System.out.println("----- Inital check ------");
 
@@ -355,7 +388,7 @@ public class FSM {
 
 			// FSM f1 = fsm.removePath(fsm);
 			System.out.println("--------- model perturbation -------");
-			FSM f1 = fsm.perturb(fsm, 40);
+			FSM f1 = fsm.perturb(fsm, perturbation);
 
 			List<String> inconsistentTraces = new ArrayList<String>();
 
