@@ -13,6 +13,6 @@ The method *perturb* specifies the percentage of perturbation required.
 
 
 ```
-$ java FSM experiment.txt paths.txt extrapaths.txt perturbation result.txt
+$ java -jar FSM.jar experiment.txt paths.txt extrapaths.txt perturbation result.txt
 
 ```
